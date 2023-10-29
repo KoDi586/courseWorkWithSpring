@@ -6,10 +6,14 @@ import java.util.Objects;
 public class Employee {
     private final String firstName;
     private final String lastName;
+    private int salary;
+    private  int department;
 
-    public Employee(String firstName, String lastName /*, String middleName, int salary, int department*/) {
+    public Employee(String firstName, String lastName, int salary, int department) {
         this.firstName = firstName;
         this.lastName = lastName;
+        this.salary = salary;
+        this.department = department;
     }
 
     public String getFirstName() {
@@ -20,12 +24,26 @@ public class Employee {
         return lastName;
     }
 
+    public int getDepartment() {
+        return department;
+    }
+
+    public int getSalary() {
+        return salary;
+    }
+
+    public void setSalary(int salary) {
+        this.salary = salary;
+    }
+
     @Override
     public String toString() {
-        return "Employee:\n" +
+        return "Employee{" +
                 "firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
-                '.';
+                ", salary=" + salary +
+                ", department=" + department +
+                '}';
     }
 
     @Override
