@@ -82,7 +82,7 @@ public class EmployeeService {
     public String multiplyPercentDepartmentsSalarys
             (EmployeeBook employeeBook, int department, float percent) {
         employeeBook.getEmployeesMap().values().stream()
-                .filter(employee -> employee.getSalary() == department)
+                .filter(employee -> employee.getDepartment() == department)
                 .toList().
                 forEach(employee -> employee.setSalary((int)((float) employee.getSalary()* percent)));
 
