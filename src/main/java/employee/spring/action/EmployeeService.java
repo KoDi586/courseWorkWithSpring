@@ -1,6 +1,9 @@
-package employee.spring;
+package employee.spring.action;
 
-import exception.EmployeeStorageIsFullException;
+import employee.mainEmployee.Employee;
+import employee.mainEmployee.EmployeeBook;
+import employee.exception.EmployeeStorageIsFullException;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -11,21 +14,32 @@ import java.util.stream.Collectors;
 
 @Service
 public class EmployeeService {
+    private final static char[] tabooSymbols = "1234567890!@#$%^&*()_+;%:?=/.,".toCharArray();
     private List<Employee> employees = new ArrayList<>();
     static int maxEmployeesCount = 10;
     static int employeesCounter = 0;
 
-    public String addEmployee(EmployeeBook employeeBook, String firstName, String lastName, int salary, int department) {
+    public String addEmployee(EmployeeBook employeeBook, String firstName, String lastName,
+                              int salary, int department)
+    {
         if (employeesCounter >= maxEmployeesCount) {
             throw new EmployeeStorageIsFullException("Превышен лимит сотрудников");
         }
-        Employee employee = new Employee(firstName, lastName, salary, department);
+        if (!StringUtils.containsNone(firstName + lastName, tabooSymbols)) {
+            throw new RuntimeException("ошибка ввода");
+        }
+        Employee employee = new Employee(StringUtils.capitalize(firstName),
+                        StringUtils.capitalize(lastName), salary, department);
+
         employeeBook.put(employee.getFirstName() + " " + employee.getLastName(), employee);
         employeesCounter++;
         return "Сотрудник добавлен";
     }
     public String deleteEmployee(EmployeeBook employeeBook, String firstName, String lastName) {
-        String name = firstName + " " + lastName;
+        if (!StringUtils.containsNone(firstName + lastName, tabooSymbols)) {
+            throw new RuntimeException("ошибка ввода");
+        }
+        String name = StringUtils.capitalize(firstName) + " " + StringUtils.capitalize(lastName);
         if (employeeBook.getAllEmployeeName().contains(name)) {
             employeeBook.getEmployeesMap().remove(name);
             return "Сотрудник удален";
@@ -35,7 +49,10 @@ public class EmployeeService {
 
     }
     public String findEmployee(EmployeeBook employeeBook, String firstName, String lastName) {
-        String name = firstName + " " + lastName;
+        if (!StringUtils.containsNone(firstName + lastName, tabooSymbols)) {
+            throw new RuntimeException("ошибка ввода");
+        }
+        String name = StringUtils.capitalize(firstName) + " " + StringUtils.capitalize(lastName);
         if (employeeBook.getAllEmployeeName().contains(name)) {
             return employeeBook.getEmployeesMap().get(name).toString();
         } else {

@@ -1,5 +1,7 @@
-package employee.spring;
+package employee.spring.action;
 
+import employee.mainEmployee.Employee;
+import employee.mainEmployee.EmployeeBook;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,23 +20,32 @@ public class EmployeeController {
 
     @GetMapping(path = "/add")
     public String addEmployee(@RequestParam String firstName, @RequestParam String lastName,
-                              @RequestParam int salary, @RequestParam int department)
-    {
-        return employeeService.addEmployee(employeeBook, firstName, lastName, salary, department);
+                              @RequestParam int salary, @RequestParam int department) {
+        try {
+            return employeeService.addEmployee(employeeBook, firstName, lastName, salary, department);
+        } catch (Exception e) {
+            return "400 Bad Request";
+        }
     }  //
 
     @GetMapping(path = "/remove")
     public String deleteEmployee(@RequestParam String firstName,
-                                 @RequestParam String lastName)
-    {
-        return employeeService.deleteEmployee(employeeBook, firstName, lastName);
+                                 @RequestParam String lastName) {
+        try {
+            return employeeService.deleteEmployee(employeeBook, firstName, lastName);
+        } catch (Exception e) {
+            return "400 Bad Request";
+        }
     }
 
     @GetMapping(path = "/find")
     public String findEmployee(@RequestParam String firstName,
-                               @RequestParam String lastName)
-    {
-        return employeeService.findEmployee(employeeBook, firstName, lastName);
+                               @RequestParam String lastName) {
+        try {
+            return employeeService.findEmployee(employeeBook, firstName, lastName);
+        } catch (Exception e) {
+            return "400 Bad Request";
+        }
     }   // add employee, remove employee, find employee
 
     @GetMapping(path = "/printEmployees")
@@ -65,8 +76,8 @@ public class EmployeeController {
     }
 
     @GetMapping(path = "/multiplyPercentDepartmentsSalarys")
-    public static String  multiplyPercentDepartmentsSalarys
-            (@RequestParam int department,@RequestParam float percent) {
+    public static String multiplyPercentDepartmentsSalarys
+            (@RequestParam int department, @RequestParam float percent) {
 
         return employeeService.multiplyPercentDepartmentsSalarys(employeeBook, department, percent);
     }
