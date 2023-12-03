@@ -1,7 +1,8 @@
 package employee.spring.action;
 
-import employee.mainEmployee.Employee;
-import employee.mainEmployee.EmployeeBook;
+import employee.exception.TaboSymbolsInEmployeeException;
+import employee.workWithEmployees.Employee;
+import employee.workWithEmployees.EmployeeBook;
 import employee.exception.EmployeeStorageIsFullException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -16,17 +17,22 @@ import java.util.stream.Collectors;
 public class EmployeeService {
     private final static char[] tabooSymbols = "1234567890!@#$%^&*()_+;%:?=/.,".toCharArray();
     private List<Employee> employees = new ArrayList<>();
-    static int maxEmployeesCount = 10;
+    private static EmployeeBook employeeBook = new EmployeeBook();
+    static int maxEmployeesCount = 5;
     static int employeesCounter = 0;
 
-    public String addEmployee(EmployeeBook employeeBook, String firstName, String lastName,
+    public EmployeeBook getEmployeeBook() {
+        return employeeBook;
+    }
+
+    public String addEmployee(String firstName, String lastName,
                               int salary, int department)
     {
         if (employeesCounter >= maxEmployeesCount) {
             throw new EmployeeStorageIsFullException("Превышен лимит сотрудников");
         }
         if (!StringUtils.containsNone(firstName + lastName, tabooSymbols)) {
-            throw new RuntimeException("ошибка ввода");
+            throw new TaboSymbolsInEmployeeException("ошибка ввода");
         }
         Employee employee = new Employee(StringUtils.capitalize(firstName),
                         StringUtils.capitalize(lastName), salary, department);
@@ -35,7 +41,7 @@ public class EmployeeService {
         employeesCounter++;
         return "Сотрудник добавлен";
     }
-    public String deleteEmployee(EmployeeBook employeeBook, String firstName, String lastName) {
+    public String deleteEmployee(String firstName, String lastName) {
         if (!StringUtils.containsNone(firstName + lastName, tabooSymbols)) {
             throw new RuntimeException("ошибка ввода");
         }
@@ -48,7 +54,7 @@ public class EmployeeService {
         }
 
     }
-    public String findEmployee(EmployeeBook employeeBook, String firstName, String lastName) {
+    public String findEmployee(String firstName, String lastName) {
         if (!StringUtils.containsNone(firstName + lastName, tabooSymbols)) {
             throw new RuntimeException("ошибка ввода");
         }
@@ -66,21 +72,21 @@ public class EmployeeService {
     }
 
 
-    public Employee minSalaryInDepartment(EmployeeBook employeeBook, int department) {
+    public Employee minSalaryInDepartment(int department) {
         return employeeBook.getEmployeesMap().values().stream()
                 .filter(employee -> employee.getDepartment() == department)
                 .min(Comparator.comparingInt(employee -> employee.getSalary()))
                 .orElseThrow();
     }
 
-    public Employee maxSalaryInDepartment(EmployeeBook employeeBook, int department) {
+    public Employee maxSalaryInDepartment(int department) {
         return employeeBook.getEmployeesMap().values().stream()
                 .filter(employee -> employee.getDepartment() == department)
                 .max(Comparator.comparingInt(employee -> employee.getSalary()))
                 .orElseThrow();
     }
 
-    public int sumDepartmentSalarys(EmployeeBook employeeBook, int department) {
+    public int  sumDepartmentSalarys(int department) {
         return employeeBook.getEmployeesMap().values().stream()
                 .filter(employee -> employee.getDepartment() == department)
                 .map(employee -> employee.getSalary())
@@ -88,16 +94,16 @@ public class EmployeeService {
                 .mapToInt(Integer::intValue).sum();
         }
 
-    public int middleSalaryInDepartment(EmployeeBook employeeBook, int department) {
+    public int middleSalaryInDepartment(int department) {
         int count = employeeBook.getEmployeesMap().values().stream()
                 .filter(employee -> employee.getDepartment() == department)
                 .toList().size();
 
-        return (int) ((float) sumDepartmentSalarys(employeeBook, department) / (float) count);
+        return (int) ((float) sumDepartmentSalarys(department) / (float) count);
     }
 
     public String multiplyPercentDepartmentsSalarys
-            (EmployeeBook employeeBook, int department, float percent) {
+            (int department, float percent) {
         employeeBook.getEmployeesMap().values().stream()
                 .filter(employee -> employee.getDepartment() == department)
                 .toList().
@@ -106,14 +112,14 @@ public class EmployeeService {
         return "Зарплата успешно изменена";
     }
 
-    public String allEmployees(EmployeeBook employeeBook, int department) {
+    public String allEmployees(int department) {
         StringBuilder stringBuilder = new StringBuilder();
         AtomicInteger count = new AtomicInteger(1);
         employeeBook.getEmployeesMap().values().stream()
                 .filter(employee -> employee.getDepartment() == department)
                 .toList()
                 .forEach(employee -> {
-                    stringBuilder.append(count.getAndIncrement()).append(") ").append(employee.toString()).append(". ");
+                    stringBuilder.append("(").append(count.getAndIncrement()).append(") ").append(employee.toString()).append(". ");
                 });
         if (!stringBuilder.isEmpty()) {
             return stringBuilder.toString();
@@ -121,10 +127,10 @@ public class EmployeeService {
         return "в отделе пусто";
     }
 
-    public String allEmployees(EmployeeBook employeeBook) {
+    public String allEmployees() {
         StringBuilder stringBuilder = new StringBuilder();
         employeeBook.getAllDepartments().
-                forEach(department -> stringBuilder.append("departmen Number ").append(department).append(allEmployees(employeeBook, department)));
+                forEach(department -> stringBuilder.append("departmen Number ").append(department).append(" ").append(allEmployees(department)));
         return stringBuilder.toString();
     }
 }
