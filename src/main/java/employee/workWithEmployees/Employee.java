@@ -1,4 +1,4 @@
-package employee.mainEmployee;
+package employee.workWithEmployees;
 
 import java.util.Objects;
 

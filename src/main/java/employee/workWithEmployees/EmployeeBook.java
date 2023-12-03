@@ -1,4 +1,6 @@
-package employee.mainEmployee;
+package employee.workWithEmployees;
+
+import employee.exception.EmployeeAlreadyAddedException;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -25,7 +27,7 @@ public class EmployeeBook {
             this.allEmployeeName.add(str);
             allDepartments.add(employee.getDepartment());
         } else {
-            throw new RuntimeException("такой сотрудник уже есть!");
+            throw new EmployeeAlreadyAddedException("такой сотрудник уже есть!");
         }
     }
 
